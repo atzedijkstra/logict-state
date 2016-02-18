@@ -16,6 +16,10 @@ build-type:          Simple
 -- extra-source-files:  
 cabal-version:       >=1.10
 
+source-repository head
+  type:     git
+  location: https://github.com/atzedijkstra/logict-state.git
+
 library
   exposed-modules:     Control.Monad.LogicState,
                        Control.Monad.LogicState.Class,

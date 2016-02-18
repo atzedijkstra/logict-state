@@ -7,16 +7,18 @@
 -- License     : BSD3
 --
 -- Maintainer  : atzedijkstra@gmail.com
--- Stability   : experimental
--- Portability : non-portable (multi-parameter type classes)
+-- Stability   : experimental, (as of 20160218) under development
+-- Portability : non-portable
 --
--- A backtracking, logic programming monad on top of logict, adding backtrackable state
+-- A backtracking, logic programming monad partially derived and on top of logict, adding backtrackable state.
 --
---    Adapted from the paper
+--    LogicT (and thus this library as well) is adapted from the paper
 --    /Backtracking, Interleaving, and Terminating
 --        Monad Transformers/, by
 --    Oleg Kiselyov, Chung-chieh Shan, Daniel P. Friedman, Amr Sabry
 --    (<http://www.cs.rutgers.edu/~ccshan/logicprog/LogicT-icfp2005.pdf>).
+--
+-- 
 -------------------------------------------------------------------------
 
 module Control.Monad.LogicState (

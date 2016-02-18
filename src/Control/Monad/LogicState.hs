@@ -21,7 +21,10 @@
 
 module Control.Monad.LogicState (
     module Control.Monad.Logic.Class,
-    module MonadLogicState,
+    module Control.Monad,
+    module Control.Monad.Trans,
+    module Control.Monad.LogicState.Class,
+    module Control.Monad.TransLogicState.Class,
     -- * The LogicVar monad
     -- LogicVar,
     LogicState,
@@ -35,9 +38,6 @@ module Control.Monad.LogicState (
     runLogicVarT,
     -}
     LogicStateT(..),
-    module Control.Monad,
-    module Control.Monad.Trans,
-    module Control.Monad.TransLogicState.Class
   ) where
 
 import Data.Maybe
@@ -60,7 +60,7 @@ import qualified Data.Traversable as T
 
 import Control.Monad.Logic.Class
 
-import MonadLogicState
+import Control.Monad.LogicState.Class
 import Control.Monad.TransLogicState.Class
 
 -------------------------------------------------------------------------
@@ -74,10 +74,10 @@ newtype LogicStateT gs bs m a =
 -- | Convenience types
 type LogicStateS gs bs r m = StateT (gs,bs) m r -- (gs,bs) -> m (r,(gs,bs))
 type LogicContS gs bs r m a =
-           (   a                                -- ^ result
-            -> LogicStateS gs bs r m             -- ^ failure continuation
+           (   a                                 --  result
+            -> LogicStateS gs bs r m             --  failure continuation
             -> LogicStateS gs bs r m
-           )                                    -- ^ success continuation
+           )                                     -- ^ success continuation
         -> LogicStateS gs bs r m                 -- ^ failure continuation
         -> LogicStateS gs bs r m                 -- ^ global + backtracking state
 
@@ -173,7 +173,7 @@ instance TransLogicState (gs,bs) (LogicStateT gs bs) where
   liftWithState m = LogicStateT $ \sk fk -> StateT $ \s -> m s >>= \(a,s) -> runStateT (sk a fk) s
   {-# INLINE liftWithState #-}
 
-instance (Monad m) => MonadLogicStateT (gs,bs) (LogicStateT gs bs m) where
+instance (Monad m) => MonadLogicState (gs,bs) (LogicStateT gs bs m) where
     lvGet = LogicStateT $ \sk fk -> get >>= \s -> sk s fk
     lvModifyGet f = LogicStateT $ \sk fk -> StateT $ \s -> let (x,s') = f s in runStateT (sk x fk) s'
     backtrack m = lvGet >>= \(_::gs,bs) -> return $ LogicStateT $ \sk fk -> StateT $ \(gs,_) -> runStateT (unLogicStateT m sk fk) (gs,bs)
@@ -266,7 +266,7 @@ instance MonadError e m => MonadError e (LogicVarT gs bs m) where
   catchError m h = LogicVarT $ \sk fk s -> let
       handle r = r `catchError` \e -> unLogicVarT (h e) sk fk s
     in handle $ unLogicVarT m (\a fk' -> sk a (handle . fk')) fk s
-
+-}
 {-
   catchError m h = LogicT $ \sk fk -> let
       handle r = r `catchError` \e -> unLogicT (h e) sk fk

@@ -22,7 +22,7 @@ library
                        Control.Monad.TransLogicState.Class,
                        Control.Monad.LogicState.Examples
   other-modules:       Control.Monad.LogicState.Logic
-  -- other-extensions:    
+  default-extensions:  MultiParamTypeClasses
   build-depends:       base >=4.8 && <4.9,
                        mtl >= 2.1,
                        transformers >= 0.4.2,

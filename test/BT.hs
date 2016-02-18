@@ -15,6 +15,7 @@ import           Control.Monad.Stepwise.Core
 import           Control.Monad.Stepwise.Derived
 
 import           Control.Monad.LogicState
+import qualified Control.Monad.LogicState.Examples as E
 
 
 {-
@@ -111,10 +112,10 @@ queens3L n = do
     return q
 
 count3g :: Monad m => LogicStateT Int Int m Int
-count3g = lvModifyGet (\(g::Int, b::Int) -> (g,(g+1,b)))
+count3g = state (\(g::Int, b::Int) -> (g,(g+1,b)))
 
 count3gb :: Monad m => LogicStateT Int Int m (Int,Int)
-count3gb = lvModifyGet (\(g::Int, b::Int) -> ((g,b),(g+1,b+1)))
+count3gb = state (\(g::Int, b::Int) -> ((g,b),(g+1,b+1)))
 
 generate3 :: Monad m => Int -> Int -> LogicStateT Int Int m ((Int,Int),[Int])
 generate3 _ 0 = count3gb >>= \c -> return (c,[])
@@ -237,6 +238,7 @@ main = do
   -- forM_ (observeAll () $ queens1L 8) print
   -- forM_ (observeAll () $ (queens2L 8 :: Logic [Int])) print
   -- forM_ (observeAll (0::Int,0::Int) $ (queens3L 8 :: LogicVar Int Int ((Int,Int),[Int]))) print
-  forM_ (observeMany (0::Int,0::Int) 5000 $ (queens3L 10 :: LogicState Int Int ((Int,Int),[Int]))) print
+  -- forM_ (observeMany (0::Int,0::Int) 5000 $ (queens3L 10 :: LogicState Int Int ((Int,Int),[Int]))) print
   -- forM_ (observe (0::Int,0::Int) $ (queens3L 8 :: LogicVar Int Int ((Int,Int),[Int]))) print
   -- forM_ (stepwiseEval $ queens4S 8) print
+  E.main

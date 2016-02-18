@@ -1,4 +1,5 @@
-{-# LANGUAGE MultiParamTypeClasses #-}
+{-| Wrapper around 'Control.Monad.Logic'
+-}
 
 module Control.Monad.LogicState.Logic
   ( module Control.Monad.Logic

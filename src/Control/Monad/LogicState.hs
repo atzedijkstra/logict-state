@@ -1,4 +1,4 @@
-{-# LANGUAGE UndecidableInstances, Rank2Types, FlexibleInstances, MultiParamTypeClasses, FlexibleContexts, GADTs, ScopedTypeVariables, FunctionalDependencies #-}
+{-# LANGUAGE UndecidableInstances, Rank2Types, FlexibleInstances, FlexibleContexts, GADTs, ScopedTypeVariables, FunctionalDependencies #-}
 
 -------------------------------------------------------------------------
 -- |
@@ -111,7 +111,7 @@ instance MonadTrans (LogicStateT gs bs) where
 instance (MonadIO m) => MonadIO (LogicStateT gs bs m) where
     liftIO = lift . liftIO
 
-instance MonadState s m => MonadState s (LogicStateT gs bs m) where
+instance {-# OVERLAPPABLE #-} MonadState s m => MonadState s (LogicStateT gs bs m) where
     get = lift get
     put = lift . put
 
@@ -144,20 +144,13 @@ instance (Monad m) => MonadLogic (LogicStateT gs bs m) where
          (return Nothing)
 
 instance TransLogicState (gs,bs) (LogicStateT gs bs) where
-  -------------------------------------------------------------------------
-  -- | Extracts the first result from a LogicVarT computation,
-  -- failing otherwise.
   observeT s lt = evalStateT (unLogicStateT lt (\a _ -> return a) (fail "No answer.")) s
   
-  -------------------------------------------------------------------------
-  -- | Extracts all results from a LogicStateT computation.
   observeAllT s m = evalStateT (unLogicStateT m
     (\a fk -> fk >>= \as -> return (a:as))
     (return []))
     s
   
-  -------------------------------------------------------------------------
-  -- | Extracts up to a given number of results from a LogicVarT computation.
   observeManyT s n m = evalStateT (obs n m) s
    where
      obs n m
@@ -167,16 +160,16 @@ instance TransLogicState (gs,bs) (LogicStateT gs bs) where
      
      sk Nothing _ = return []
      sk (Just (a, m')) _ = StateT $ \s -> (\as -> (a:as,s)) `liftM` observeManyT s (n-1) m'
-{-
--}
-  -- |
+
   liftWithState m = LogicStateT $ \sk fk -> StateT $ \s -> m s >>= \(a,s) -> runStateT (sk a fk) s
   {-# INLINE liftWithState #-}
 
+instance Monad m => MonadState (gs,bs) (LogicStateT gs bs m) where
+    get   = LogicStateT $ \sk fk -> get >>= \s -> sk s fk
+    put s = LogicStateT $ \sk fk -> put s >>= \a -> sk a fk
+
 instance (Monad m) => MonadLogicState (gs,bs) (LogicStateT gs bs m) where
-    lvGet = LogicStateT $ \sk fk -> get >>= \s -> sk s fk
-    lvModifyGet f = LogicStateT $ \sk fk -> StateT $ \s -> let (x,s') = f s in runStateT (sk x fk) s'
-    backtrack m = lvGet >>= \(_::gs,bs) -> return $ LogicStateT $ \sk fk -> StateT $ \(gs,_) -> runStateT (unLogicStateT m sk fk) (gs,bs)
+    backtrack m = get >>= \(_::gs,bs) -> return $ LogicStateT $ \sk fk -> StateT $ \(gs,_) -> runStateT (unLogicStateT m sk fk) (gs,bs)
 
 
 -------------------------------------------------------------------------

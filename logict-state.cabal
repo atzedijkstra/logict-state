@@ -23,8 +23,7 @@ source-repository head
 library
   exposed-modules:     Control.Monad.LogicState,
                        Control.Monad.LogicState.Class,
-                       Control.Monad.TransLogicState.Class,
-                       Control.Monad.LogicState.Examples
+                       Control.Monad.TransLogicState.Class
   other-modules:       Control.Monad.LogicState.Logic
   default-extensions:  MultiParamTypeClasses
   build-depends:       base >=4.8 && <4.9,

@@ -27,13 +27,12 @@ module Control.Monad.LogicState (
     module Control.Monad.Trans,
     module Control.Monad.LogicState.Class,
     module Control.Monad.TransLogicState.Class,
-    -- * The LogicVar monad
-    -- LogicVar,
+    -- * The LogicState monad
     LogicState,
     {-
     logicVar,
     runLogicVar,
-    -- * The LogicVarT monad transformer
+    -- * The LogicStateT monad transformer
     -}
     -- LogicVarT(..),
     {-
@@ -113,9 +112,11 @@ instance MonadTrans (LogicStateT gs bs) where
 instance (MonadIO m) => MonadIO (LogicStateT gs bs m) where
     liftIO = lift . liftIO
 
+{-
 instance {-# OVERLAPPABLE #-} MonadState s m => MonadState s (LogicStateT gs bs m) where
     get = lift get
     put = lift . put
+-}
 
 instance MonadReader r m => MonadReader r (LogicStateT gs bs m) where
     ask = lift ask

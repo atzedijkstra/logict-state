@@ -6,12 +6,11 @@ module Control.Monad.LogicState.Class
   where
 
 import Control.Monad
-import Control.Monad.Logic.Class
-import Control.Monad.State
+import Control.Monad.Logic.Class (MonadLogic)
+import Control.Monad.State (MonadState)
 
 -------------------------------------------------------------------------------
--- | API for MonadLogic which allows state and backtracking on it
--- Minimal implementation: msplit
+-- | API for MonadLogic which allows state and backtracking on it.
 class (MonadLogic m, MonadState s m) => MonadLogicState s m where
     
     -- | Return argument monad with the current backtrackable part of the state remembered.

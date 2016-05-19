@@ -9,7 +9,7 @@ module Control.Monad.TransLogicState.Class
   )
   where
 
-import Data.Typeable
+-- import Data.Typeable
 
 import Control.Monad.Identity
 -- import Control.Monad.Trans

@@ -11,6 +11,7 @@ module Control.Monad.TransLogicState.Class
 
 -- import Data.Typeable
 
+import Control.Arrow
 import Control.Monad.Identity
 -- import Control.Monad.Trans
 
@@ -25,12 +26,22 @@ class {- MonadTrans t => -} TransLogicState s t where
   -------------------------------------------------------------------------
   -- | Extracts all results from a 't m' computation.
   observeAllT :: (Monad m) => s -> t m a -> m [a]
-  observeAllT e = observeManyT e maxBound
+  observeAllT e = fmap fst . observeStateAllT e
+  
+  -------------------------------------------------------------------------
+  -- | Extracts all results from a 't m' computation.
+  observeStateAllT :: (Monad m) => s -> t m a -> m ([a],s)
+  observeStateAllT e = observeStateManyT e maxBound
   
   -------------------------------------------------------------------------
   -- | Extracts up to a given number of results from a 't m' computation.
   observeManyT :: forall m a . (Monad m) => s -> Int -> t m a -> m [a]
-  observeManyT e n m = fmap (take n) $ observeAllT e m
+  observeManyT e n m = fmap fst $ observeStateManyT e n m
+
+  -------------------------------------------------------------------------
+  -- | Extracts up to a given number of results from a 't m' computation.
+  observeStateManyT :: forall m a . (Monad m) => s -> Int -> t m a -> m ([a],s)
+  observeStateManyT e n m = fmap (first $ take n) $ observeStateAllT e m
 
   -- | Lift a monad by threading the state available in the transformed monad through it
   liftWithState :: Monad m => (s -> m (a,s)) -> t m a

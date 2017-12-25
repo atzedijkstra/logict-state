@@ -149,12 +149,27 @@ instance (Monad m) => MonadLogic (LogicStateT gs bs m) where
 instance TransLogicState (gs,bs) (LogicStateT gs bs) where
   observeT s lt = evalStateT (unLogicStateT lt (\a _ -> return a) (fail "No answer.")) s
   
-  observeAllT s m = evalStateT (unLogicStateT m
+  -- observeAllT s m = evalStateT (unLogicStateT m
+  --   (\a fk -> fk >>= \as -> return (a:as))
+  --   (return []))
+  --   s
+  
+  observeStateAllT s m = runStateT (unLogicStateT m
     (\a fk -> fk >>= \as -> return (a:as))
     (return []))
     s
   
-  observeManyT s n m = evalStateT (obs n m) s
+  -- observeManyT s n m = evalStateT (obs n m) s
+  --  where
+  --    obs n m
+  --       | n <= 0 = return []
+  --       | n == 1 = unLogicStateT m (\a _ -> return [a]) (return [])
+  --       | otherwise = unLogicStateT (msplit m) sk (return [])
+  --    
+  --    sk Nothing _ = return []
+  --    sk (Just (a, m')) _ = StateT $ \s -> (\as -> (a:as,s)) `liftM` observeManyT s (n-1) m'
+
+  observeStateManyT s n m = runStateT (obs n m) s
    where
      obs n m
         | n <= 0 = return []

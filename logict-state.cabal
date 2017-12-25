@@ -2,7 +2,7 @@
 -- documentation, see http://haskell.org/cabal/users-guide/
 
 name:                logict-state
-version:             0.1.0.2
+version:             0.1.0.3
 synopsis:            Library for logic programming based on haskell package logict
 description:         Logic programming built on top of part of logict library, in particular for dealing with backtrackable state
 homepage:            https://github.com/atzedijkstra/logict-state
@@ -26,7 +26,7 @@ library
                        Control.Monad.TransLogicState.Class
   other-modules:       Control.Monad.LogicState.Logic
   default-extensions:  MultiParamTypeClasses
-  build-depends:       base >=4.8 && < 4.10,
+  build-depends:       base >=4.8 && < 5,
                        mtl >= 2.1,
                        transformers >= 0.4.2,
                        logict >= 0.6.0.2

@@ -115,26 +115,11 @@ instance (Monad m) => MonadLogic (LogicStateT gs bs m) where
 
 instance TransLogicState (gs,bs) (LogicStateT gs bs) where
   observeT s lt = evalStateT (unLogicStateT lt (\a _ -> return a) (fail "No answer.")) s
-  
-  -- observeAllT s m = evalStateT (unLogicStateT m
-  --   (\a fk -> fk >>= \as -> return (a:as))
-  --   (return []))
-  --   s
-  
+    
   observeStateAllT s m = runStateT (unLogicStateT m
     (\a fk -> fk >>= \as -> return (a:as))
     (return []))
     s
-  
-  -- observeManyT s n m = evalStateT (obs n m) s
-  --  where
-  --    obs n m
-  --       | n <= 0 = return []
-  --       | n == 1 = unLogicStateT m (\a _ -> return [a]) (return [])
-  --       | otherwise = unLogicStateT (msplit m) sk (return [])
-  --    
-  --    sk Nothing _ = return []
-  --    sk (Just (a, m')) _ = StateT $ \s -> (\as -> (a:as,s)) `liftM` observeManyT s (n-1) m'
 
   observeStateManyT s n m = runStateT (obs n m) s
    where
@@ -153,8 +138,13 @@ instance Monad m => MonadState (gs,bs) (LogicStateT gs bs m) where
     get   = LogicStateT $ \sk fk -> get >>= \s -> sk s fk
     put s = LogicStateT $ \sk fk -> put s >>= \a -> sk a fk
 
-instance (Monad m) => MonadLogicState (gs,bs) (LogicStateT gs bs m) where
-    backtrack m = get >>= \(_::gs,bs) -> return $ LogicStateT $ \sk fk -> StateT $ \(gs,_) -> runStateT (unLogicStateT m sk fk) (gs,bs)
+instance (Monad m) => MonadLogicState (,) gs bs m (LogicStateT gs bs m) where
+    backtrackWithRoll roll m = do
+      (_,bs1) <- get
+      return $ LogicStateT $ \sk fk ->
+        StateT $ \(gs2,bs2) -> do
+          bs <- roll gs2 bs2 bs1
+          runStateT (unLogicStateT m sk fk) (gs2,bs)
 
 
 -------------------------------------------------------------------------

@@ -13,6 +13,7 @@ import qualified Control.Monad.Logic as CML
 import           Control.Monad.TransLogicState.Class
 
 instance TransLogicState () LogicT where
+  observe _ = CML.observe
   observeT _ = CML.observeT
   observeAllT _ = CML.observeAllT
   observeManyT _ = CML.observeManyT

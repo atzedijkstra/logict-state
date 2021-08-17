@@ -83,6 +83,8 @@ instance Applicative (LogicStateT gs bs f) where
 instance Monad (LogicStateT gs bs m) where
     return a = LogicStateT ($ a)
     m >>= f = LogicStateT $ \sk -> unLogicStateT m (\a -> unLogicStateT (f a) sk)
+
+instance MonadFail (LogicStateT gs bs m) where
     fail _ = LogicStateT $ flip const
 
 instance Alternative (LogicStateT gs bs f) where
@@ -114,6 +116,8 @@ instance (Monad m) => MonadLogic (LogicStateT gs bs m) where
          (return Nothing)
 
 instance TransLogicState (gs,bs) (LogicStateT gs bs) where
+  observe s lt = runIdentity $ evalStateT (unLogicStateT lt (\a _ -> return a) (error "No answer.")) s
+
   observeT s lt = evalStateT (unLogicStateT lt (\a _ -> return a) (fail "No answer.")) s
     
   observeStateAllT s m = runStateT (unLogicStateT m

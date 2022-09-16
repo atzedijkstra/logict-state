@@ -9,6 +9,7 @@ module Control.Monad.LogicState.Logic
 
 import           Control.Monad.Logic hiding (observeT, observeAllT, observeManyT, observe, observeAll, observeMany)
 import qualified Control.Monad.Logic as CML
+import           Control.Monad.Trans.Class (lift)
 
 import           Control.Monad.TransLogicState.Class
 

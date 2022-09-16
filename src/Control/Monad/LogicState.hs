@@ -83,6 +83,8 @@ instance Applicative (LogicStateT gs bs f) where
 instance Monad (LogicStateT gs bs m) where
     return a = LogicStateT ($ a)
     m >>= f = LogicStateT $ \sk -> unLogicStateT m (\a -> unLogicStateT (f a) sk)
+
+instance MonadFail (LogicStateT gs bs m) where
     fail _ = LogicStateT $ flip const
 
 instance Alternative (LogicStateT gs bs f) where

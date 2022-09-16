@@ -2,7 +2,7 @@
 -- documentation, see http://haskell.org/cabal/users-guide/
 
 name:                logict-state
-version:             0.1.0.5
+version:             0.1.1.0
 synopsis:            Library for logic programming based on haskell package logict
 description:         Logic programming built on top of part of logict library, in particular for dealing with backtrackable state
 homepage:            https://github.com/atzedijkstra/logict-state
@@ -29,6 +29,6 @@ library
   build-depends:       base >=4.8 && < 5,
                        mtl >= 2.1,
                        transformers >= 0.4.2,
-                       logict >= 0.6.0.2
+                       logict >= 0.8.0.0
   hs-source-dirs:      src
   default-language:    Haskell2010

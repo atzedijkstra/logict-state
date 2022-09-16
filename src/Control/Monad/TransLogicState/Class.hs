@@ -13,14 +13,14 @@ module Control.Monad.TransLogicState.Class
 
 import Control.Arrow
 import Control.Monad.Identity
--- import Control.Monad.Trans
+import Control.Monad.Trans
 
 -- | Additions to MonadTrans specifically useful for LogicState
-class {- MonadTrans t => -} TransLogicState s t where
+class MonadTrans t => TransLogicState s t where
   -------------------------------------------------------------------------
   -- | Extracts the first result from a 't m' computation,
   -- failing otherwise.
-  observeT :: (Monad m) => s -> t m a -> m a
+  observeT :: (MonadFail m) => s -> t m a -> m a
   observeT e m = fmap head $ observeManyT e 1 m
   
   -------------------------------------------------------------------------
@@ -48,8 +48,8 @@ class {- MonadTrans t => -} TransLogicState s t where
 
 -------------------------------------------------------------------------
 -- | Extracts the first result from a LogicVar computation.
-observe :: (TransLogicState s t) => s -> t Identity a -> a
-observe e = runIdentity . observeT e
+observe :: (TransLogicState s t) => s -> t Maybe a -> Maybe a
+observe e = observeT e
 
 -------------------------------------------------------------------------
 -- | Extracts all results from a LogicVar computation.
